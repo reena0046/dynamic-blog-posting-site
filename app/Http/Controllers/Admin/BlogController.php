@@ -64,17 +64,17 @@ class BlogController extends Controller
 
                 $edit = '<a href="' . $editUrl . '" class="blog-action-btn blog-action-edit" title="Edit" aria-label="Edit">' .
                     '<i class="fa fa-edit"></i>' .
-                '</a>';
+                    '</a>';
 
                 $show = '<a href="' . $showUrl . '" class="blog-action-btn blog-action-view modal-one-btn" ' .
                     'data-entity="blogs" data-title="Blog Details" data-modal-size="lg" data-modal-scrollable="true" ' .
                     'data-route-key="' . $blog->id . '" title="View" aria-label="View">' .
                     '<i class="fa fa-eye"></i>' .
-                '</a>';
+                    '</a>';
 
                 return '<div class="d-flex align-items-center justify-content-center blog-action-cell">' .
                     $edit . $show .
-                '</div>';
+                    '</div>';
             })
             ->addIndexColumn()
             ->rawColumns(['title', 'description', 'status', 'action'])
@@ -197,20 +197,6 @@ class BlogController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Blog status updated successfully',
-        ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Blog $blog)
-    {
-        $blog->deleteMedia();
-        $blog->delete();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Blog deleted successfully',
         ]);
     }
 }

@@ -40,4 +40,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(BlogLike::class);
     }
+
+    public function initials(): string
+    {
+        return collect(preg_split('/\s+/', trim((string) $this->name)))
+            ->filter()
+            ->map(fn ($part) => mb_strtoupper(mb_substr($part, 0, 1)))
+            ->join('');
+    }
 }
