@@ -1,42 +1,6 @@
 @extends('layouts.frontend')
 
 @php
-    $blog = [
-        'id' => 1,
-        'title' => 'Getting Started with Laravel: A Complete Beginner Guide',
-        'description' => 'Learn the fundamentals of Laravel and discover how this powerful PHP framework helps developers build modern, scalable and reliable web applications.',
-        'image' => 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1400&q=80',
-        'category' => 'Development',
-        'views' => 1200,
-        'likes' => 230,
-        'comments' => 45,
-        'published_at' => '2026-01-15',
-        'author' => 'John Doe',
-        'author_role' => 'Laravel Developer & Technical Writer',
-        'read_time' => '8 min read',
-    ];
-
-    $relatedBlogs = [
-        [
-            'id' => 2,
-            'title' => 'The Future of Digital Innovation',
-            'description' => 'Explore the latest trends and technologies shaping the digital world.',
-            'image' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
-            'views' => 980,
-            'likes' => 186,
-            'comments' => 28,
-        ],
-        [
-            'id' => 6,
-            'title' => 'How Artificial Intelligence Is Shaping Our Future',
-            'description' => 'Discover technology trends and innovations shaping our digital future.',
-            'image' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
-            'views' => 3100,
-            'likes' => 589,
-            'comments' => 91,
-        ],
-    ];
-
     $comments = [
         [
             'author' => 'Sarah Smith',
@@ -58,16 +22,28 @@
         ],
     ];
 
-    $tocItems = [
-        ['id' => 'introduction', 'title' => 'Introduction to Laravel'],
-        ['id' => 'requirements', 'title' => 'Laravel Requirements'],
-        ['id' => 'installation', 'title' => 'Installing Laravel'],
-        ['id' => 'structure', 'title' => 'Understanding Laravel Structure'],
-        ['id' => 'conclusion', 'title' => 'Conclusion'],
-    ];
+    $blogTitle = $blog->title;
+    $blogDescription = $blog->description;
+    $blogImage = $blog->imageUrl();
+    $blogViews = (int) $blog->view_count;
+    $blogLikes = (int) $blog->like_count;
+    $blogCommentsCount = (int) $blog->comment_count;
+    $blogCategory = $blog->tagList()[0] ?? 'Blog';
+    $blogAuthor = 'Admin';
+    $blogAuthorRole = 'BlogSpace Writer';
+    $blogPublishedAt = $blog->created_at;
+    $blogReadTime = max(1, (int) ceil(str_word_count(strip_tags((string) $blog->content)) / 200)) . ' min read';
 @endphp
 
-@section('title', $blog['title'] . ' | BlogSpace')
+@section('title', ($blog->seo_title ?: $blog->title) . ' | BlogSpace')
+@section('meta_description', $blog->seo_description ?: \Illuminate\Support\Str::limit(strip_tags((string) $blog->description), 160))
+@section('canonical', $blog->canonical_url ?: url()->current())
+
+@push('head')
+    @if ($blog->schema_markup)
+        <script type="application/ld+json">{!! json_encode($blog->schema_markup, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    @endif
+@endpush
 
 @section('content')
 
@@ -80,7 +56,7 @@
                 <i class="bi bi-chevron-right"></i>
                 <a href="{{ url('/') }}">Blogs</a>
                 <i class="bi bi-chevron-right"></i>
-                <span>{{ $blog['title'] }}</span>
+                <span>{{ $blogTitle }}</span>
             </nav>
         </div>
     </section>
@@ -95,7 +71,7 @@
 
                 <!-- BANNER IMAGE -->
                 <div class="blog-detail-banner">
-                    <img src="{{ $blog['image'] }}" alt="{{ $blog['title'] }}">
+                    <img src="{{ $blogImage }}" alt="{{ $blogTitle }}">
                 </div>
 
 
@@ -104,12 +80,12 @@
 
                     <span class="blog-category">
                         <i class="bi bi-bookmark"></i>
-                        {{ $blog['category'] }}
+                        {{ $blogCategory }}
                     </span>
 
-                    <h1>{{ $blog['title'] }}</h1>
+                    <h1>{{ $blogTitle }}</h1>
 
-                    <p class="blog-detail-intro">{{ $blog['description'] }}</p>
+                    <p class="blog-detail-intro">{{ $blogDescription }}</p>
 
                 </div>
 
@@ -120,15 +96,15 @@
                     <div class="detail-stat-list">
                         <span>
                             <i class="bi bi-eye"></i>
-                            {{ $blog['views'] >= 1000 ? number_format($blog['views'] / 1000, 1) . 'K' : $blog['views'] }} Views
+                            {{ $blogViews >= 1000 ? number_format($blogViews / 1000, 1) . 'K' : $blogViews }} Views
                         </span>
                         <span>
                             <i class="bi bi-heart"></i>
-                            {{ $blog['likes'] }} Likes
+                            {{ $blogLikes }} Likes
                         </span>
                         <span>
                             <i class="bi bi-chat-dots"></i>
-                            {{ $blog['comments'] }} Comments
+                            {{ $blogCommentsCount }} Comments
                         </span>
                     </div>
 
@@ -137,7 +113,7 @@
                             <i class="bi bi-heart"></i> Like
                         </button>
                     @else
-                        <a href="#" class="detail-login-like">
+                        <a href="{{ route('login') }}" class="detail-login-like">
                             <i class="bi bi-box-arrow-in-right"></i>
                             Login to Like
                         </a>
@@ -150,30 +126,30 @@
                 <div class="author-card">
 
                     <div class="author-avatar">
-                        {{ collect(explode(' ', $blog['author']))->map(fn($part) => mb_substr($part, 0, 1))->join('') }}
+                        {{ collect(explode(' ', $blogAuthor))->map(fn($part) => mb_substr($part, 0, 1))->join('') }}
                     </div>
 
                     <div class="author-info">
                         <span>Published by</span>
-                        <h2>{{ $blog['author'] }}</h2>
-                        <p>{{ $blog['author_role'] }}</p>
+                        <h2>{{ $blogAuthor }}</h2>
+                        <p>{{ $blogAuthorRole }}</p>
                     </div>
 
                     <div class="author-meta">
                         <span>
                             <i class="bi bi-calendar3"></i>
-                            {{ \Carbon\Carbon::parse($blog['published_at'])->format('F j, Y') }}
+                            {{ \Carbon\Carbon::parse($blogPublishedAt)->format('F j, Y') }}
                         </span>
                         <span>
                             <i class="bi bi-clock"></i>
-                            {{ $blog['read_time'] }}
+                            {{ $blogReadTime }}
                         </span>
                     </div>
 
                 </div>
 
 
-                <!-- TABLE OF CONTENTS -->
+                @if (count($tocItems) >= 2)
                 <div class="table-of-contents">
 
                     <div class="toc-title">
@@ -193,85 +169,14 @@
                     </ul>
 
                 </div>
+                @endif
 
-
-                <!-- FULL BLOG CONTENT -->
                 <article class="blog-content">
-
-                    <section id="introduction">
-                        <h2>Introduction to Laravel</h2>
-                        <p>
-                            Laravel is one of the most popular PHP frameworks
-                            used for building modern and scalable web applications.
-                            It provides developers with an elegant syntax and many
-                            powerful features that make development faster and easier.
-                        </p>
-                        <p>
-                            Whether you are building a small website, REST API,
-                            e-commerce platform, or a large business application,
-                            Laravel provides the tools and structure required to
-                            develop reliable applications.
-                        </p>
-                    </section>
-
-                    <section id="requirements">
-                        <h2>Laravel Requirements</h2>
-                        <p>
-                            Before starting a Laravel project, make sure your
-                            development environment contains the required software.
-                        </p>
-                        <ul>
-                            <li>PHP 8.1 or higher</li>
-                            <li>Composer</li>
-                            <li>MySQL or another supported database</li>
-                            <li>Apache or Nginx web server</li>
-                        </ul>
-                    </section>
-
-                    <section id="installation">
-                        <h2>Installing Laravel</h2>
-                        <p>
-                            Laravel can easily be installed using Composer.
-                            Run the following command to create a new project.
-                        </p>
-                        <div class="code-block">
-                            <code>composer create-project laravel/laravel my-project</code>
-                        </div>
-                        <p>
-                            After installation, move into the project directory
-                            and start the development server.
-                        </p>
-                    </section>
-
-                    <section id="structure">
-                        <h2>Understanding Laravel Structure</h2>
-                        <p>
-                            Laravel follows the MVC architecture pattern.
-                            The application is organized into different
-                            directories that separate business logic,
-                            database operations, views, routes and controllers.
-                        </p>
-                        <p>
-                            This structure helps developers maintain clean,
-                            reusable and scalable code.
-                        </p>
-                    </section>
-
-                    <section id="conclusion">
-                        <h2>Conclusion</h2>
-                        <p>
-                            Laravel is an excellent choice for developers
-                            who want to build modern PHP applications.
-                            Its powerful ecosystem, elegant syntax and
-                            built-in features help developers create
-                            applications efficiently.
-                        </p>
-                    </section>
-
+                    {!! $blogContent !!}
                 </article>
 
 
-                <!-- RELATED BLOGS -->
+                @if ($relatedBlogs->isNotEmpty())
                 <section class="related-blogs-section">
 
                     <div class="section-heading">
@@ -283,20 +188,20 @@
                     <div class="row g-4">
                         @foreach ($relatedBlogs as $relatedBlog)
                             <div class="col-md-6">
-                                <a href="{{ route('blog-detail', $relatedBlog['id']) }}" class="related-blog-card">
+                                <a href="{{ route('blog-detail', $relatedBlog->slug) }}" class="related-blog-card">
 
                                     <div class="related-blog-image">
-                                        <img src="{{ $relatedBlog['image'] }}" alt="{{ $relatedBlog['title'] }}">
+                                        <img src="{{ $relatedBlog->imageUrl() }}" alt="{{ $relatedBlog->title }}">
                                     </div>
 
                                     <div class="related-blog-content">
-                                        <h3>{{ $relatedBlog['title'] }}</h3>
-                                        <p>{{ $relatedBlog['description'] }}</p>
+                                        <h3>{{ $relatedBlog->title }}</h3>
+                                        <p>{{ $relatedBlog->description }}</p>
 
                                         <div class="related-blog-stats">
-                                            <span><i class="bi bi-eye"></i> {{ $relatedBlog['views'] >= 1000 ? number_format($relatedBlog['views'] / 1000, 1) . 'K' : $relatedBlog['views'] }}</span>
-                                            <span><i class="bi bi-heart"></i> {{ $relatedBlog['likes'] }}</span>
-                                            <span><i class="bi bi-chat-dots"></i> {{ $relatedBlog['comments'] }}</span>
+                                            <span><i class="bi bi-eye"></i> {{ $relatedBlog->view_count >= 1000 ? number_format($relatedBlog->view_count / 1000, 1) . 'K' : (int) $relatedBlog->view_count }}</span>
+                                            <span><i class="bi bi-heart"></i> {{ (int) $relatedBlog->like_count }}</span>
+                                            <span><i class="bi bi-chat-dots"></i> {{ (int) $relatedBlog->comment_count }}</span>
                                         </div>
 
                                         <span class="read-more-link">Read More <i class="bi bi-arrow-right"></i></span>
@@ -308,6 +213,7 @@
                     </div>
 
                 </section>
+                @endif
 
 
                 <!-- SEARCH & SORT -->
@@ -348,7 +254,7 @@
                     <div class="comments-heading">
                         <span class="section-label"><span></span> DISCUSSION</span>
                         <h2>Comments</h2>
-                        <p>{{ $blog['comments'] }} comments on this article</p>
+                        <p>{{ $blogCommentsCount }} comments on this article</p>
                     </div>
 
                     @auth
@@ -371,7 +277,7 @@
                                 <strong>Want to join the discussion?</strong>
                                 <p>Please login to post a comment.</p>
                             </div>
-                            <a href="#">Login</a>
+                            <a href="{{ route('login') }}">Login</a>
                         </div>
                     @endauth
 

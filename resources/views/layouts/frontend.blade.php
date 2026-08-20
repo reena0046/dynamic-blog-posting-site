@@ -8,6 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>@yield('title', 'BlogSpace')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @hasSection('meta_description')
+        <meta name="description" content="@yield('meta_description')">
+    @endif
+    @hasSection('canonical')
+        <link rel="canonical" href="@yield('canonical')">
+    @endif
+    @stack('head')
 
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,6 +35,7 @@
 
 
     <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 
     @stack('styles')
@@ -34,7 +43,7 @@
 </head>
 
 
-<body>
+<body class="@yield('body_class')">
 
 
     <!-- =========================
@@ -66,27 +75,18 @@
 
 
             <div class="navbar-actions">
-
-
-                <a href="#" class="btn login-btn">
-
-                    <i class="ti ti-login"></i>
-
-                    <span>Login</span>
-
-                </a>
-
-
-
-                <a href="#" class="btn register-btn">
-
-                    <i class="ti ti-user-plus"></i>
-
-                    <span>Register</span>
-
-                </a>
-
-
+                @auth
+                    <span class="nav-user-name">{{ auth()->user()->name }}</span>
+                    <form action="{{ route('logout') }}" method="POST" class="logout-form">
+                        @csrf
+                        <button type="submit" class="btn signup-btn">Logout</button>
+                    </form>
+                @else
+                    <a href="{{ route('register') }}"
+                        class="btn nav-auth-btn {{ request()->routeIs('register') ? 'is-active' : 'is-outline' }}">Sign up</a>
+                    <a href="{{ route('login') }}"
+                        class="btn nav-auth-btn {{ request()->routeIs('register') ? 'is-outline' : 'is-active' }}">Log in</a>
+                @endauth
             </div>
 
 
@@ -101,9 +101,7 @@
     ========================== -->
 
     <main>
-
         @yield('content')
-
     </main>
 
 
@@ -130,7 +128,23 @@
 
 
 
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            closeButton: true,
+            progressBar: false,
+            positionClass: 'toast-top-right',
+            timeOut: 3000
+        };
+        @if (session('success'))
+            toastr.success(@json(session('success')));
+        @endif
+        @if (session('error'))
+            toastr.error(@json(session('error')));
+        @endif
+    </script>
 
 
     @stack('scripts')

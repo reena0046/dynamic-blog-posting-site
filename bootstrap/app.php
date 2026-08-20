@@ -12,7 +12,23 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'preventBackHistory' => \App\Http\Middleware\PreventBackHistory::class,
+        ]);
+
+        $middleware->redirectGuestsTo(function (Request $request) {
+            return $request->is('admin*')
+                ? route('admin.login')
+                : route('login');
+        });
+        $middleware->redirectUsersTo(function () {
+            if (auth()->user()?->is_admin) {
+                return route('admin.dashboard');
+            }
+
+            return route('home');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
