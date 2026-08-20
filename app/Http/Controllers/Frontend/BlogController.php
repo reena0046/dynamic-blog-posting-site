@@ -33,7 +33,7 @@ class BlogController extends Controller
         $tocItems = $blog->tableOfContents();
         $blogContent = $blog->contentWithHeadingIds();
         $relatedBlogs = $blog->relatedBlogs(4);
-        $comments = $blog->comments()->with('user')->get();
+        $comments = $blog->comments()->with('user')->get()->unique('id')->values();
         $isLiked = $blog->isLikedBy(auth()->user());
         $author = $blog->publisher();
 

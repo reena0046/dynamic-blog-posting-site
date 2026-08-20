@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -47,5 +46,12 @@ class User extends Authenticatable
             ->filter()
             ->map(fn ($part) => mb_strtoupper(mb_substr($part, 0, 1)))
             ->join('');
+    }
+
+    public function avatarUrl(): ?string
+    {
+        $avatar = trim((string) $this->avatar);
+
+        return $avatar !== '' ? $avatar : null;
     }
 }

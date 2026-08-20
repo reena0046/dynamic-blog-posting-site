@@ -7,7 +7,18 @@
                 <span>
                     <i class="fas fa-chart-line"></i>
                 </span>
-                <span class="hide-menu">Dashboard</span>
+                <span class="hide-menu">Analytics</span>
+            </a>
+        </li>
+
+        <li class="sidebar-item">
+            <a class="sidebar-link @if (Route::is('admin.users.*')) active @endif"
+                href="{{ route('admin.users.index') }}"
+                aria-expanded="false">
+                <span>
+                    <i class="fas fa-user"></i>
+                </span>
+                <span class="hide-menu">Users</span>
             </a>
         </li>
 

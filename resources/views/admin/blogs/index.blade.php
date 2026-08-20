@@ -51,6 +51,7 @@
                 scrollCollapse: false,
                 pageLength: 10,
                 lengthMenu: [10, 20, 30, 40, 50],
+                searching: true,
                 ajax: {
                     url: '{!! route('admin.blogs.data') !!}',
                     type: 'POST',
@@ -89,13 +90,24 @@
                     targets: [0, 1, 2],
                     className: 'text-center'
                 }],
+                initComplete: function() {
+                    var api = this.api();
+                    var $input = $('#datatable_filter input');
+
+                    $input.off();
+                    $input.on('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            api.search(this.value).draw();
+                        }
+                    });
+                }
             });
 
             $('#blog-sort').on('change', function() {
                 dataTable.ajax.reload();
             });
 
-            // Toggle blog status
             $(document).on('change', '.blog-status-switch', function(e) {
                 e.preventDefault();
 

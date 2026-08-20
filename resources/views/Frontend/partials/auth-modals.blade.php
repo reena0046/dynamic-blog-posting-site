@@ -1,12 +1,12 @@
 {{-- Auth modals: appear over the current frontend page --}}
 <div class="auth-modal-overlay" id="authModalOverlay" hidden aria-hidden="true">
-        <div class="auth-modal" role="dialog" aria-modal="true" aria-label="Authentication">
-            <button type="button" class="auth-modal-close" id="authModalClose" aria-label="Close">
-                <i class="bi bi-x-lg"></i>
-            </button>
+    <div class="auth-modal" role="dialog" aria-modal="true" aria-label="Authentication">
+        <button type="button" class="auth-modal-close" id="authModalClose" aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+        </button>
 
-            <div class="auth-modal-panel" data-auth-panel="login" hidden>
-                <h2 class="auth-title" id="authModalTitleLogin">Welcome back!</h2>
+        <div class="auth-modal-panel" data-auth-panel="login" hidden>
+            <h2 class="auth-title" id="authModalTitleLogin">Welcome back!</h2>
             <p class="auth-sub">Sign in to continue to BlogSpace</p>
 
             @include('Frontend.partials.google-button')

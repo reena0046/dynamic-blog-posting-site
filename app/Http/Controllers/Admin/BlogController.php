@@ -8,31 +8,18 @@ use App\Http\Requests\Admin\BlogUpdateRequest;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class BlogController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return view('admin.blogs.index');
     }
 
-    /**
-     * Display a listing of the resource in datatable.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function data(Request $request)
     {
         $query = Blog::query();
-
         $sort = $request->input('sort', 'newest');
 
         if ($sort === 'oldest') {
@@ -44,12 +31,6 @@ class BlogController extends Controller
         }
 
         return DataTables::eloquent($query)
-            ->editColumn('title', function ($blog) {
-                return $blog->title;
-            })
-            ->editColumn('description', function ($blog) {
-                return Str::limit(strip_tags($blog->description), 80);
-            })
             ->addColumn('status', function ($blog) {
                 $checked = $blog->status === 'ACTIVE' ? 'checked' : '';
 
@@ -58,7 +39,6 @@ class BlogController extends Controller
                 </div>';
             })
             ->addColumn('action', function ($blog) {
-
                 $editUrl = route('admin.blogs.edit', $blog->id);
                 $showUrl = route('admin.blogs.show', ['blog' => $blog->id]);
 
@@ -77,26 +57,15 @@ class BlogController extends Controller
                     '</div>';
             })
             ->addIndexColumn()
-            ->rawColumns(['title', 'description', 'status', 'action'])
+            ->rawColumns(['status', 'action'])
             ->make(true);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         return view('admin.blogs.form');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(BlogStoreRequest $request)
     {
         $blog = new Blog();
@@ -118,23 +87,11 @@ class BlogController extends Controller
         return view('admin.blogs.show', compact('blog'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Blog $blog)
     {
         return view('admin.blogs.form', compact('blog'));
     }
 
-    /**
-     * Upload an image to the blog content.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function uploadImage(Request $request)
     {
         $request->validate([
@@ -159,13 +116,6 @@ class BlogController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(BlogUpdateRequest $request, Blog $blog)
     {
         $blog->fill($request->safe()->except(['thumbnail_image', 'banner_image', 'schema_markup']));
@@ -181,9 +131,6 @@ class BlogController extends Controller
         ], 200);
     }
 
-    /**
-     * Toggle blog status between ACTIVE and INACTIVE.
-     */
     public function updateStatus(Request $request)
     {
         $request->validate([

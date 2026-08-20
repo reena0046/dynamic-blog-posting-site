@@ -14,8 +14,7 @@
 @endphp
 
 @section('title', ($blog->seo_title ?: $blog->title) . ' | BlogSpace')
-@section('meta_description', $blog->seo_description ?: \Illuminate\Support\Str::limit(strip_tags((string)
-    $blog->description), 160))
+@section('meta_description', $blog->seo_description ?: \Illuminate\Support\Str::limit(strip_tags((string) $blog->description), 160))
 @section('canonical', $blog->canonical_url ?: url()->current())
 
 @push('head')
@@ -40,31 +39,55 @@
         </div>
     </section>
 
-
     <!-- ========================= BLOG DETAIL ========================== -->
 
     <section class="blog-detail-section">
         <div class="container">
             <div class="blog-detail-main">
 
-
                 <!-- BANNER IMAGE -->
                 <div class="blog-detail-banner">
                     <img src="{{ $blogImage }}" alt="{{ $blogTitle }}">
                 </div>
 
-
                 <!-- HEADER -->
                 <div class="blog-detail-header">
-
                     <h1>{{ $blogTitle }}</h1>
-
                 </div>
 
+                <!-- AUTHOR DETAILS -->
+                <div class="author-card">
+                    @if ($author)
+                        @include('partials.user-avatar', [
+                            'user' => $author,
+                            'class' => 'author-avatar',
+                        ])
+                    @else
+                        <div class="author-avatar">
+                            {{ collect(explode(' ', $blogAuthor))->map(fn($part) => mb_substr($part, 0, 1))->join('') }}
+                        </div>
+                    @endif
 
-                <!-- VIEWS / LIKES -->
+                    <div class="author-info">
+                        <span>Published by</span>
+                        <h2>{{ $blogAuthor }}</h2>
+                        <p>{{ $blogAuthorRole }}</p>
+                    </div>
+
+                    <div class="author-meta">
+                        <span>
+                            <i class="bi bi-calendar3"></i>
+                            {{ \Carbon\Carbon::parse($blogPublishedAt)->format('F j, Y') }}
+                        </span>
+                        <span>
+                            <i class="bi bi-clock"></i>
+                            {{ $blogReadTime }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- VIEWS / LIKES / COMMENTS -->
                 <div class="blog-detail-stats">
-
                     <div class="detail-stat-list">
                         <span>
                             <i class="bi bi-eye"></i>
@@ -73,6 +96,10 @@
                         <span id="blog-like-count">
                             <i class="bi bi-heart"></i>
                             <span id="blog-like-count-value">{{ $blogLikes }}</span> Likes
+                        </span>
+                        <span>
+                            <i class="bi bi-chat-dots"></i>
+                            {{ $blogCommentsCount }} Comments
                         </span>
                     </div>
 
@@ -91,36 +118,7 @@
                             Login to Like
                         </a>
                     @endauth
-
                 </div>
-
-
-                <!-- AUTHOR DETAILS -->
-                <div class="author-card">
-
-                    <div class="author-avatar">
-                        {{ collect(explode(' ', $blogAuthor))->map(fn($part) => mb_substr($part, 0, 1))->join('') }}
-                    </div>
-
-                    <div class="author-info">
-                        <span>Published by</span>
-                        <h2>{{ $blogAuthor }}</h2>
-                        <p>{{ $blogAuthorRole }}</p>
-                    </div>
-
-                    <div class="author-meta">
-                        <span>
-                            <i class="bi bi-calendar3"></i>
-                            {{ \Carbon\Carbon::parse($blogPublishedAt)->format('F j, Y') }}
-                        </span>
-                        <span>
-                            <i class="bi bi-clock"></i>
-                            {{ $blogReadTime }}
-                        </span>
-                    </div>
-
-                </div>
-
 
                 @if (count($tocItems) > 0)
                     <div class="table-of-contents">
@@ -151,7 +149,6 @@
                 <article class="blog-content">
                     {!! $blogContent !!}
                 </article>
-
 
                 @if ($relatedBlogs->isNotEmpty())
                     <section class="related-blogs-section">
@@ -229,9 +226,8 @@
                     </section>
                 @endif
 
-
                 <!-- COMMENTS -->
-                <section class="comments-section">
+                <section class="comments-section" id="comments">
 
                     <div class="comments-heading">
                         <span class="section-label"><span></span> DISCUSSION</span>
@@ -266,13 +262,15 @@
                         </div>
                     @endauth
 
-                    @foreach ($comments as $comment)
+                    @foreach ($comments->unique('id') as $comment)
                         @continue(!$comment->user)
                         <div class="comment-item">
 
-                            <div class="comment-avatar {{ $commentAvatarColors[$loop->index % 3] }}">
-                                {{ $comment->user->initials() }}
-                            </div>
+                            @include('partials.user-avatar', [
+                                'user' => $comment->user,
+                                'class' => 'comment-avatar',
+                                'extraClass' => $commentAvatarColors[$loop->index % 3],
+                            ])
 
                             <div class="comment-content">
                                 <div class="comment-top">
@@ -286,7 +284,6 @@
                     @endforeach
 
                 </section>
-
 
             </div>
         </div>

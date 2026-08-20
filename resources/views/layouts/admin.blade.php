@@ -17,13 +17,12 @@
     <link rel="stylesheet" href="{{ asset('admin/css/admin.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-    @vite(['resources/js/admin.js'])
     @stack('styles')
 </head>
 
 <body>
-    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed">
         <aside class="left-sidebar">
             <div>
                 <div class="brand-logo d-flex align-items-center justify-content-between">
@@ -44,17 +43,14 @@
                 <nav class="navbar navbar-expand-lg navbar-light">
                     <ul class="navbar-nav flex-row ms-auto align-items-center">
                         <li class="nav-item dropdown">
-                            <button type="button"
-                                class="border-0 bg-transparent"
-                                id="adminProfileDropdown"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                                aria-label="Open Admin profile">
+                            <button type="button" class="border-0 bg-transparent" id="adminProfileDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Open Admin profile">
                                 <div class="admin-avatar-circle">
                                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                                 </div>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-end profile-dropdown text-start" aria-labelledby="adminProfileDropdown">
+                            <div class="dropdown-menu dropdown-menu-end profile-dropdown text-start"
+                                aria-labelledby="adminProfileDropdown">
                                 <h5 class="profile-dropdown-title">User Profile</h5>
                                 <div class="profile-dropdown-user">
                                     <div class="profile-dropdown-photo">
@@ -70,7 +66,10 @@
                                 </div>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="profile-logout-btn">Log Out</button>
+                                    <button type="submit" class="profile-logout-btn">
+                                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                                        <span>Log Out</span>
+                                    </button>
                                 </form>
                             </div>
                         </li>
@@ -90,13 +89,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
     <script>
         $.ajaxSetup({
             headers: {
@@ -106,7 +98,7 @@
             }
         });
 
-        document.getElementById('sidebarCollapse')?.addEventListener('click', function () {
+        document.getElementById('sidebarCollapse')?.addEventListener('click', function() {
             document.getElementById('main-wrapper')?.classList.remove('show-sidebar');
         });
     </script>

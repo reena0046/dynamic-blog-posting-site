@@ -109,7 +109,7 @@
                                 <input type="file" name="thumbnail_image" id="thumbnail_image" accept="image/*">
                                 <span class="cms-upload-icon"><i class="ti ti-upload"></i></span>
                                 <span class="cms-upload-title">Click to upload</span>
-                                <span class="cms-upload-help">Recommended for blog listing cards.</span>
+                                <span class="cms-upload-help">Recommended size: 700 × 430 px</span>
                                 <img src="{{ isset($blog) && $blog->thumbnail_image ? asset(Storage::url($blog->thumbnail_image)) : '' }}"
                                     alt=""
                                     class="cms-upload-preview {{ isset($blog) && $blog->thumbnail_image ? 'is-visible' : '' }}"
@@ -123,7 +123,7 @@
                                 <input type="file" name="banner_image" id="banner_image" accept="image/*">
                                 <span class="cms-upload-icon"><i class="ti ti-upload"></i></span>
                                 <span class="cms-upload-title">Click to upload</span>
-                                <span class="cms-upload-help">Recommended for the top section of the blog.</span>
+                                <span class="cms-upload-help">Recommended size: 1140 × 420 px</span>
                                 <img src="{{ isset($blog) && $blog->banner_image ? asset(Storage::url($blog->banner_image)) : '' }}"
                                     alt=""
                                     class="cms-upload-preview {{ isset($blog) && $blog->banner_image ? 'is-visible' : '' }}"
@@ -220,6 +220,23 @@
                 return;
             }
 
+            function normalizePastedHtml(html) {
+                if (!html) {
+                    return html;
+                }
+
+                // Google Docs wraps normal text in <b style="font-weight:normal">.
+                html = html.replace(/<b\b[^>]*style\s*=\s*["'][^"']*font-weight\s*:\s*normal[^"']*["'][^>]*>([\s\S]*?)<\/b>/gi, '$1');
+
+                // Keep semantic headings used by Docs/Sheets paste.
+                html = html.replace(/<\s*h1\b/gi, '<h2').replace(/<\/\s*h1\s*>/gi, '</h2>');
+
+                // Preserve links but drop unsafe javascript: hrefs.
+                html = html.replace(/\shref\s*=\s*(["'])\s*javascript:[^"']*\1/gi, ' href="#"');
+
+                return html;
+            }
+
             CKEDITOR.replace('content', {
                 height: 220,
                 resize_dir: 'vertical',
@@ -229,6 +246,11 @@
                 extraPlugins: 'uploadimage,pastefromword',
                 removePlugins: 'easyimage,exportpdf',
                 forcePasteAsPlainText: false,
+                clipboard_defaultContentType: 'html',
+                pasteFilter: null,
+                pasteFromWordRemoveFontStyles: false,
+                pasteFromWordRemoveStyles: false,
+                pasteFromWord_inlineImages: true,
                 allowedContent: true,
                 format_tags: 'p;h2;h3;h4',
                 filebrowserImageUploadUrl: "{{ route('admin.blogs.upload-image') }}?_token={{ csrf_token() }}",
@@ -272,24 +294,33 @@
                     return;
                 }
 
+                var editor = evt.editor;
+
                 if (CKEDITOR.lang && CKEDITOR.lang.en) {
                     CKEDITOR.lang.en.source = 'View Code';
                 }
 
                 if (initialBlogContent) {
-                    evt.editor.setData(initialBlogContent);
+                    editor.setData(initialBlogContent);
                 }
 
-                evt.editor.dataProcessor.htmlFilter.addRules({
+                editor.dataProcessor.htmlFilter.addRules({
                     elements: {
                         h1: function(element) {
                             element.name = 'h2';
                         }
                     }
                 });
+
+                editor.on('paste', function(pasteEvt) {
+                    if (!pasteEvt.data || typeof pasteEvt.data.dataValue !== 'string') {
+                        return;
+                    }
+
+                    pasteEvt.data.dataValue = normalizePastedHtml(pasteEvt.data.dataValue);
+                });
             });
 
-            // Generate slug from title
             function generateSlug(text) {
                 return text
                     .toLowerCase()
@@ -304,7 +335,6 @@
                 }
             });
 
-            // Enable custom slug when toggle is on
             $('#custom-slug-toggle').on('change', function() {
                 if ($(this).is(':checked')) {
                     $('#slug').prop('readonly', false).focus();
@@ -424,7 +454,6 @@
                 previewUpload($(this), 'banner-preview');
             });
 
-            // AJAX form submit
             $('#blogs-form').submit(function(e) {
                 e.preventDefault();
 

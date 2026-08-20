@@ -43,8 +43,11 @@ class GoogleAuthController extends Controller
                 ->with('error', 'Google did not provide an email address.');
         }
 
-        $user = User::where('google_id', $googleUser->getId())
-            ->orWhere('email', $email)
+        $user = User::query()
+            ->where(function ($query) use ($googleUser, $email) {
+                $query->where('google_id', $googleUser->getId())
+                    ->orWhere('email', $email);
+            })
             ->first();
 
         if ($user && $user->is_admin) {
