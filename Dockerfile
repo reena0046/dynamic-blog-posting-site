@@ -39,6 +39,9 @@ RUN mkdir -p storage/framework/cache \
     bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+# Create storage symbolic link
+RUN php artisan storage:link
+
 EXPOSE 10000
 
 CMD php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT
