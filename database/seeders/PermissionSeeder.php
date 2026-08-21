@@ -11,10 +11,10 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@blogspace.com'],
             [
-                'name' => 'Admin',
-                'password' => Hash::make('Admin@123'),
+                'name' => 'BlogSpace Admin',
+                'password' => Hash::make('BlogSpace@123'),
                 'is_admin' => true,
                 'email_verified_at' => now(),
             ]
