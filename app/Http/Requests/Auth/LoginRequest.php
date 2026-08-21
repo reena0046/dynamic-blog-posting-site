@@ -16,30 +16,31 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Email is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.required' => 'Password is required.',
         ];
     }
 
     public function authenticate(): void
     {
         if (! Auth::attempt([
-            'email' => $this->string('email'),
-            'password' => $this->string('password'),
+            'email' => $this->email,
+            'password' => $this->password,
             'is_admin' => true,
         ], $this->boolean('remember'))) {
-            $this->session()->flash('error', 'Invalid email or password.');
 
             throw ValidationException::withMessages([
-                'email' => 'Invalid email or password.',
+                'password' => 'Invalid email or password.',
             ]);
         }
-    }
-
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator): void
-    {
-        $this->session()->flash('error', $validator->errors()->first());
-
-        parent::failedValidation($validator);
     }
 }
