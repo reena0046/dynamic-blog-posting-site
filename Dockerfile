@@ -1,18 +1,22 @@
-# Node stage - Build Vite assets
+# =========================
+# Stage 1: Build frontend
+# =========================
 FROM node:20 AS frontend
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
 RUN npm run build
 
 
-# PHP stage
+# =========================
+# Stage 2: Laravel app
+# =========================
 FROM php:8.3-cli
 
 RUN apt-get update && apt-get install -y \
@@ -28,13 +32,13 @@ WORKDIR /var/www/html
 
 COPY . .
 
-# Copy built Vite assets
+# Copy Vite build files
 COPY --from=frontend /app/public/build ./public/build
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN php artisan config:clear
+RUN php artisan optimize:clear
 
 EXPOSE 10000
 
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
