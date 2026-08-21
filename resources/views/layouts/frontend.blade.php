@@ -34,8 +34,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 
 
-    {{-- <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}"> --}}
     <link rel="stylesheet" href="/frontend/css/style.css">
+    {{-- <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}"> --}}
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
