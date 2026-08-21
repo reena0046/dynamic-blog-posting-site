@@ -33,8 +33,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 
-    <link rel="stylesheet" href="/frontend/css/style.css?v=12345">
-    {{-- <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}"> --}}
+
+    <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 
@@ -84,8 +84,8 @@
                 @else
                     <button type="button" class="btn nav-auth-btn is-outline js-open-auth-modal"
                         data-auth-modal="register">Sign up</button>
-                    <button type="button" class="btn nav-auth-btn is-active js-open-auth-modal" data-auth-modal="login">Log
-                        in</button>
+                    <button type="button" class="btn nav-auth-btn is-active js-open-auth-modal"
+                        data-auth-modal="login">Log in</button>
                 @endauth
             </div>
 
@@ -150,7 +150,7 @@
 
     @guest
         <script>
-            (function() {
+            (function () {
                 const overlay = document.getElementById('authModalOverlay');
                 if (!overlay) return;
 
@@ -159,7 +159,7 @@
                 const dialog = overlay.querySelector('.auth-modal');
 
                 function setPanel(mode) {
-                    panels.forEach(function(panel) {
+                    panels.forEach(function (panel) {
                         const active = panel.getAttribute('data-auth-panel') === mode;
                         panel.hidden = !active;
                     });
@@ -178,7 +178,7 @@
                     document.body.classList.remove('auth-modal-open');
                 }
 
-                document.addEventListener('click', function(event) {
+                document.addEventListener('click', function (event) {
                     const openTrigger = event.target.closest('.js-open-auth-modal');
                     if (openTrigger) {
                         event.preventDefault();
@@ -195,17 +195,17 @@
 
                 closeBtn?.addEventListener('click', closeAuthModal);
 
-                overlay.addEventListener('click', function(event) {
+                overlay.addEventListener('click', function (event) {
                     if (event.target === overlay) {
                         closeAuthModal();
                     }
                 });
 
-                dialog?.addEventListener('click', function(event) {
+                dialog?.addEventListener('click', function (event) {
                     event.stopPropagation();
                 });
 
-                document.addEventListener('keydown', function(event) {
+                document.addEventListener('keydown', function (event) {
                     if (event.key === 'Escape' && !overlay.hidden) {
                         closeAuthModal();
                     }
@@ -214,8 +214,7 @@
                 @if (session('open_auth_modal'))
                     openAuthModal(@json(session('open_auth_modal')));
                 @endif
-            })
-            ();
+            })();
         </script>
     @endguest
 
