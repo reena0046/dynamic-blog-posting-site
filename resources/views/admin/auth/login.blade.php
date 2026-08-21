@@ -26,7 +26,7 @@
                 <label class="form-label-admin" for="email">Email</label>
                 <input type="email" id="email" name="email"
                     class="form-input login-input @error('email') is-invalid @enderror" value="{{ old('email') }}"
-                    placeholder="Enter Email" autocomplete="username" required>
+                    placeholder="Enter Email" autocomplete="username" >
                 @error('email')
                     <p class="form-error">{{ $message }}</p>
                 @enderror
@@ -35,7 +35,7 @@
                 <div class="password-field">
                     <input type="password" id="password" name="password"
                         class="form-input login-input @error('password') is-invalid @enderror"
-                        placeholder="Enter password" autocomplete="current-password" required>
+                        placeholder="Enter password" autocomplete="current-password">
                     <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password">
                         <i class="bi bi-eye"></i>
                     </button>
