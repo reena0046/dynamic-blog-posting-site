@@ -2929,17 +2929,23 @@ body {
 }
 
 .user-activity-comment-list {
+    display: flex;
+    flex-direction: column;
     margin: 10px 0 0 46px;
     width: calc(100% - 46px);
+    max-width: none;
+    box-sizing: border-box;
 }
 
 .user-activity-comment-row {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    padding: 10px 0;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 16px;
+    width: 100%;
+    padding: 7px 0;
     border-top: 1px solid #eef2f7;
+    box-sizing: border-box;
 }
 
 .user-activity-comment-row:first-child {
@@ -2948,17 +2954,21 @@ body {
 }
 
 .user-activity-comment-text {
-    display: block;
+    flex: 1 1 auto;
     width: 100%;
+    min-width: 0;
+    max-width: none;
     font-size: 13px;
     font-weight: 500;
     color: #334155;
-    line-height: 1.5;
-    word-break: break-word;
+    line-height: 1.45;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 .user-activity-comment-date {
-    display: block;
+    flex: 0 0 auto;
     font-size: 12px;
     font-weight: 500;
     color: #94a3b8;
