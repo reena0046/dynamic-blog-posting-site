@@ -55,7 +55,7 @@
                     <h1>{{ $blogTitle }}</h1>
                 </div>
 
-                <!-- VIEWS / LIKES / COMMENTS -->
+                <!-- VIEWS / LIKES -->
                 <div class="blog-detail-stats">
                     <div class="detail-stat-list">
                         <span>
@@ -65,10 +65,6 @@
                         <span id="blog-like-count">
                             <i class="bi bi-heart"></i>
                             <span id="blog-like-count-value">{{ $blogLikes }}</span> Likes
-                        </span>
-                        <span>
-                            <i class="bi bi-chat-dots"></i>
-                            {{ $blogCommentsCount }} Comments
                         </span>
                     </div>
 
