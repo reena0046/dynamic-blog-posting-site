@@ -55,37 +55,6 @@
                     <h1>{{ $blogTitle }}</h1>
                 </div>
 
-                <!-- AUTHOR DETAILS -->
-                <div class="author-card">
-                    @if ($author)
-                        @include('partials.user-avatar', [
-                            'user' => $author,
-                            'class' => 'author-avatar',
-                        ])
-                    @else
-                        <div class="author-avatar">
-                            {{ collect(explode(' ', $blogAuthor))->map(fn($part) => mb_substr($part, 0, 1))->join('') }}
-                        </div>
-                    @endif
-
-                    <div class="author-info">
-                        <span>Published by</span>
-                        <h2>{{ $blogAuthor }}</h2>
-                        <p>{{ $blogAuthorRole }}</p>
-                    </div>
-
-                    <div class="author-meta">
-                        <span>
-                            <i class="bi bi-calendar3"></i>
-                            {{ \Carbon\Carbon::parse($blogPublishedAt)->format('F j, Y') }}
-                        </span>
-                        <span>
-                            <i class="bi bi-clock"></i>
-                            {{ $blogReadTime }}
-                        </span>
-                    </div>
-                </div>
-
                 <!-- VIEWS / LIKES / COMMENTS -->
                 <div class="blog-detail-stats">
                     <div class="detail-stat-list">
@@ -118,6 +87,37 @@
                             Login to Like
                         </a>
                     @endauth
+                </div>
+
+                <!-- AUTHOR DETAILS -->
+                <div class="author-card">
+                    @if ($author)
+                        @include('partials.user-avatar', [
+                            'user' => $author,
+                            'class' => 'author-avatar',
+                        ])
+                    @else
+                        <div class="author-avatar">
+                            {{ collect(explode(' ', $blogAuthor))->map(fn($part) => mb_substr($part, 0, 1))->join('') }}
+                        </div>
+                    @endif
+
+                    <div class="author-info">
+                        <span>Published by</span>
+                        <h2>{{ $blogAuthor }}</h2>
+                        <p>{{ $blogAuthorRole }}</p>
+                    </div>
+
+                    <div class="author-meta">
+                        <span>
+                            <i class="bi bi-calendar3"></i>
+                            {{ \Carbon\Carbon::parse($blogPublishedAt)->format('F j, Y') }}
+                        </span>
+                        <span>
+                            <i class="bi bi-clock"></i>
+                            {{ $blogReadTime }}
+                        </span>
+                    </div>
                 </div>
 
                 @if (count($tocItems) > 0)
